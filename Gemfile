@@ -64,6 +64,12 @@ gem 'geokit', '1.8.4'
 # Fittext JS plugin
 gem 'fittextjs_rails'
 
+#twitter-tracking
+gem 'bson_ext'
+gem 'tweetstream'
+gem 'mongo'
+gem 'twitter'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
 
