@@ -1,5 +1,3 @@
-# This is a simplified version of what we're using in production for drinksoma.com
-
 namespace :mosql do
   task :run => :environment do
     conf_path = Rails.root.join('config', 'tweets.yaml')
