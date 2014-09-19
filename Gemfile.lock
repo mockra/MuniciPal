@@ -107,6 +107,7 @@ GEM
       thor (>= 0.14, < 2.0)
     json (1.8.1)
     kgio (2.9.2)
+    log4r (1.1.10)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -117,6 +118,19 @@ GEM
     minitest (4.7.5)
     mongo (1.11.1)
       bson (= 1.11.1)
+    mongoriver (0.4.2)
+      bson_ext
+      log4r
+      mongo (>= 1.7)
+    mosql (0.3.2)
+      bson_ext
+      json
+      log4r
+      mongo
+      mongoriver
+      pg
+      rake
+      sequel
     multi_json (1.10.1)
     multipart-post (2.0.0)
     naught (1.0.0)
@@ -186,6 +200,7 @@ GEM
       multi_json (~> 1.0)
       rubyzip (< 1.0.0)
       websocket (~> 1.0.4)
+    sequel (4.14.0)
     shoulda-matchers (2.6.1)
       activesupport (>= 3.0.0)
     simple_oauth (0.2.0)
@@ -253,6 +268,7 @@ DEPENDENCIES
   jbuilder (= 1.5.3)
   jquery-rails (= 3.1.0)
   mongo
+  mosql
   pg (= 0.17.1)
   rails (= 4.0.2)
   rails_12factor (= 0.0.2)
