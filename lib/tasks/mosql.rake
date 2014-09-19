@@ -3,7 +3,7 @@
 namespace :mosql do
   task :run => :environment do
     conf_path = Rails.root.join('config', 'tweets.yaml')
-    cmd = "mosql -c #{conf_path} --sql #{ENV['DATABASE_URL']} --mongo #{ENV['MOSQL_MONGO_URI']}"
+    cmd = "mosql -c #{conf_path} --sql #{ENV['DATABASE_URL']} --mongo #{ENV['MONGOLAB_URI']}"
 
     IO.popen(cmd) do |child|
       trap('TERM') { Process.kill 'INT', child.pid }
