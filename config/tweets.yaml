@@ -1,0 +1,22 @@
+tweeterkeeper:
+  tweets:
+    :columns:
+    - _id: TEXT
+    - text:
+      :source: text
+      :type: TEXT
+    - coordinates:
+      :source: coordinates
+      :type: TEXT
+    - in_reply_to_user_id: BIGINT
+    - in_reply_to_screen_name: TEXT
+    - in_reply_to_status_id: BIGINT
+    - in_reply_to_status_id_str: TEXT
+    - id_str: TEXT
+    - created_at: TEXT
+    - source: TEXT
+    - retweet_count: INTEGER
+    - timestamp: TEXT
+    :meta:
+      :table: tweets
+      :extra_props: false
