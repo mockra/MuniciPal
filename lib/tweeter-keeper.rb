@@ -11,7 +11,7 @@ require 'time'
     conn = Mongo::Connection.from_uri(ENV['MONGOLAB_URI'])
     db = conn.db(uri.path.gsub(/^\//, ''))
   else
-    db = Mongo::Connection.new.db("tweeterkeeper")
+    db = Mongo::Connection.new.db("gtwts")
 
   end
 
