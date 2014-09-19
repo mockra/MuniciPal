@@ -33,3 +33,33 @@ client.locations(-111.894881,33.277385,-111.580636,33.513323) do |status|
   tweets.insert(status.to_h)
   tweets.ensure_index([[status.to_h.coordinates, Mongo::GEO2D]])
 end
+
+# the above change to add an index allows queries like this to mongodb:
+# db.tweets.find( { coordinates :
+#                   { $geoWithin :
+#                     { $geometry :
+#                       { type : "Polygon" ,
+#                         coordinates : [
+#                           [
+#                             [
+#                               -111.884765625,
+#                               33.343722405498454
+#                             ],
+#                             [
+#                               -111.884765625,
+#                               33.505331619804984
+#                             ],
+#                             [
+#                               -111.56959533691405,
+#                               33.505331619804984
+#                             ],
+#                             [
+#                               -111.56959533691405,
+#                               33.343722405498454
+#                             ],
+#                             [
+#                               -111.884765625,
+#                               33.343722405498454
+#                             ]
+#                           ] ]
+#                     } } } } )
