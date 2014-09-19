@@ -31,4 +31,5 @@ client = TweetStream::Client.new()
 a = []
 client.locations(-111.894881,33.277385,-111.580636,33.513323) do |status|
   tweets.insert(status.to_h)
+  tweets.ensure_index([[status.to_h.coordinates, Mongo::GEO2D]])
 end
