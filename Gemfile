@@ -69,6 +69,7 @@ gem 'bson_ext'
 gem 'tweetstream'
 gem 'mongo'
 gem 'twitter'
+gem 'mosql'
 
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.1.2'
