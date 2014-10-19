@@ -6,9 +6,9 @@ class CouncilDistrict < ActiveRecord::Base
   def self.inDistrict? lat, long
 
     # figure out if it is in a specific area in
-    @spec_area = CouncilDistrict.where(
-      "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
-      long, lat)
+    # @spec_area = CouncilDistrict.where(
+    #   "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
+    #   long, lat)
 
     @base_url = 'https://services2.arcgis.com/'
 
@@ -29,9 +29,9 @@ class CouncilDistrict < ActiveRecord::Base
     # example nil response
     # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "features"=>[]}
 
-    puts @response.body
+    @spec_area = @response.body["features"]
 
-    return @spec_area.exists?
+    return @spec_area.empty?
   end
 
   def self.getDistrict lat, long
