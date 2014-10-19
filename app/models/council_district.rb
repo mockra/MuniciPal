@@ -10,6 +10,27 @@ class CouncilDistrict < ActiveRecord::Base
       "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
       long, lat)
 
+    @base_url = 'https://services2.arcgis.com/'
+
+    @connection = Faraday.new(url: @point_in_poly_url ) do |conn|
+      conn.headers['Accept'] = 'text/json'
+      conn.request :instrumentation
+      conn.response :json
+      conn.adapter Faraday.default_adapter
+      conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
+    end
+
+    @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
+    @response = @connection.get 'https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
+                                @userpoint +
+                                '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
+    # example response
+    # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "geometryType"=>"esriGeometryPolygon", "spatialReference"=>{"wkid"=>2868, "latestWkid"=>2868}, "fields"=>[], "features"=>[{"attributes"=>{"DISTRICTS"=>"DISTRICT 1"}}]}
+    # example nil response
+    # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "features"=>[]}
+
+    puts @response.body
+
     return @spec_area.exists?
   end
 
