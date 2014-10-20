@@ -10,9 +10,9 @@ class CouncilDistrict < ActiveRecord::Base
     #   "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
     #   long, lat)
 
-    @base_url = 'https://services2.arcgis.com/'
+    @url = 'https://services2.arcgis.com/'
 
-    @connection = Faraday.new(url: @point_in_poly_url ) do |conn|
+    @connection = Faraday.new(url: @url ) do |conn|
       conn.headers['Accept'] = 'text/json'
       conn.request :instrumentation
       conn.response :json
@@ -21,7 +21,7 @@ class CouncilDistrict < ActiveRecord::Base
     end
 
     @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
-    @response = @connection.get 'https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
+    @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
                                 @userpoint +
                                 '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
     # example response
@@ -30,28 +30,41 @@ class CouncilDistrict < ActiveRecord::Base
     # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "features"=>[]}
 
     @spec_area = @response.body["features"]
-
-    return @spec_area.empty?
+    return !@spec_area.empty?
   end
 
   def self.getDistrict lat, long
     # figure out if it is in a specific area in historical district
-    @area_in_geojson = CouncilDistrict.find_by_sql(
-      "select id, name, twit_name, twit_wdgt, ST_AsGeoJSON(geom) as geom
-        from council_districts
-        where ST_Contains(
-              geom,
-              ST_SetSRID(ST_MakePoint(#{long}, #{lat}),#{COORD_SYS_REF}))")
-    return @area_in_geojson.first
+
+    @url = 'https://services2.arcgis.com/'
+
+    @connection = Faraday.new(url: @url ) do |conn|
+      conn.headers['Accept'] = 'text/json'
+      conn.request :instrumentation
+      conn.response :json
+      conn.adapter Faraday.default_adapter
+      conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
+    end
+
+    @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
+    @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
+                                @userpoint +
+                                '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
+
+    @district_number = @response.body["features"][0]["attributes"]["DISTRICTS"][-1,1]
+
+    @area_in_geojson = CouncilDistrict.find(@district_number)
+
+    return @area_in_geojson
   end
 
-  def self.getDistricts
-    # The user might want to map all the districts, so send 'em all.
-    @districts_as_geojson = CouncilDistrict.find_by_sql(
-      "select id, name, twit_name, twit_wdgt, ST_AsGeoJSON(geom) as geom
-        from council_districts");
-    return @districts_as_geojson;
-  end
+  # def self.getDistricts
+  #   # The user might want to map all the districts, so send 'em all.
+  #   @districts_as_geojson = CouncilDistrict.find_by_sql(
+  #     "select id, name, twit_name, twit_wdgt, ST_AsGeoJSON(geom) as geom
+  #       from council_districts");
+  #   return @districts_as_geojson;
+  # end
 
   def self.point_in_district district
     @point = ActiveRecord::Base.connection.select_one(

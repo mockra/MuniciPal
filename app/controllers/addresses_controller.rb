@@ -105,7 +105,6 @@ class AddressesController < ApplicationController
       @response = {}
     end
 
-    @districts = CouncilDistrict.getDistricts()
     respond_with(@response)
   end
 end
