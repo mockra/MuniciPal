@@ -3,6 +3,22 @@ class CouncilDistrict < ActiveRecord::Base
 
   COORD_SYS_REF = 4326;   # The coordinate system that will be used as the reference and is now Latitude and Longitude Coord System
 
+  def self.bypoint lat, long
+    service_url = "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer"
+    service = Geoservice::MapService.new(url: service_url)
+    params = {
+      geometry: [long,lat].join(','),
+      geometryType: "esriGeometryPoint",
+      inSR: 4326,
+      spatialRel: "esriSpatialRelIntersects",
+      units: "esriSRUnit_Meter",
+      returnGeometry: false
+    }
+    query = service.query(0, params)
+    puts query["features"]
+    return query["features"]
+  end
+
   def self.inDistrict? lat, long
 
     # figure out if it is in a specific area in
