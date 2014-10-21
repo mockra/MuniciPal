@@ -92,7 +92,7 @@ function update_with_new( data ) {
       history.pushState({}, "", "&lat=" + data.lat + "&long=" + data.lng);
       marker.setLatLng(new L.LatLng(data.lat, data.lng));
       var district = _.find(districts, { id: data.district_id });
-      var geoJSON = $.parseJSON(district.geom);
+/*      var geoJSON = $.parseJSON(district.geom);
       geoJSON.properties = { fill: config.map.district_fill };
       districtLayer.setGeoJSON(geoJSON);
       districtLayer.setFilter(function() { return true; });
