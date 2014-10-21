@@ -89,7 +89,7 @@ function update_with_new( data ) {
   if (data.in_district) {
 
     if (data.person_title == "councilmember") {
-      history.pushState({}, "", "?address=" + data.address + "&lat=" + data.lat + "&long=" + data.lng);
+      history.pushState({}, "", "&lat=" + data.lat + "&long=" + data.lng);
       marker.setLatLng(new L.LatLng(data.lat, data.lng));
       var district = _.find(districts, { id: data.district_id });
       var geoJSON = $.parseJSON(district.geom);
