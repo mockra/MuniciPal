@@ -92,6 +92,28 @@ class AddressesController < ApplicationController
       events = @event_items.map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
     end
 
+    if @geocoded_address
+      @addr = @geocoded_address.full_address
+    else
+      @addr = ""
+    end
+
+    if @person_title == "mayor" or @person_title == "manager"
+      @event_items = EventItem.current.with_matters.order('date DESC') #all
+      @district_id = nil
+        if !@lat or !@lng
+          @lat = 33.42
+          @lng = -111.835
+          @in_district = true;
+          # @district_polygon = CouncilDistrict.getDistrict @lat, @lng
+          # if @district_polygon and @district_polygon.id
+          #   @district_id = @district_id.id
+          # end
+        end
+    else
+      @district_id = @district.id
+    end
+
     # only build a response if user asks for something specific
     if (['district', 'mayor', 'manager', 'address', 'lat', 'lon'] & params.keys).length > 0
       @response = { :lat                    => @lat,
