@@ -3,8 +3,45 @@ class CouncilDistrict < ActiveRecord::Base
 
   COORD_SYS_REF = 4326;   # The coordinate system that will be used as the reference and is now Latitude and Longitude Coord System
 
-  def self.bypoint lat, long
-    service_url = "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer"
+  # THE COMMENTED EXAMPLE BELOW USES FARADAY INSTEAD OF THE ARCGIS GEM--SEEMS PREFERABLE TO GO WITH A SUPPORTED GEM FOR THE API
+  # def self.getDistrict lat, long
+  #
+  #   # figure out if it is in a specific area in
+  #   # @spec_area = CouncilDistrict.where(
+  #   #   "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
+  #   #   long, lat)
+  #
+  #   @url = 'https://services2.arcgis.com/'
+  #
+  #   @connection = Faraday.new(url: @url ) do |conn|
+  #     conn.headers['Accept'] = 'text/json'
+  #     conn.request :instrumentation
+  #     conn.response :json
+  #     conn.adapter Faraday.default_adapter
+  #     conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
+  #   end
+  #
+  #   @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
+  #   @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaCouncilDistricts/FeatureServer/0/query?geometry=' +
+  #                               @userpoint +
+  #                               '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
+  #   # example response
+  #   # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "geometryType"=>"esriGeometryPolygon", "spatialReference"=>{"wkid"=>2868, "latestWkid"=>2868}, "fields"=>[], "features"=>[{"attributes"=>{"DISTRICTS"=>"DISTRICT 1"}}]}
+  #   # example nil response
+  #   # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "features"=>[]}
+  #
+  #   if @response.body["features"].empty?
+  #     @district_data = nil
+  #   else
+  #     @district_number = @response.body["features"][0]["attributes"]["DISTRICTS"][-1,1]
+  #     @district_data = CouncilDistrict.find(@district_number)
+  #   end
+  #
+  #   return @district_data
+  # end
+
+  def self.getDistrict lat, long
+    service_url = "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaCouncilDistricts/FeatureServer"
     service = Geoservice::MapService.new(url: service_url)
     params = {
       geometry: [long,lat].join(','),
@@ -14,64 +51,16 @@ class CouncilDistrict < ActiveRecord::Base
       units: "esriSRUnit_Meter",
       returnGeometry: false
     }
-    query = service.query(0, params)
-    puts query["features"]
-    return query["features"]
-  end
+    @response = service.query(0, params)
+    puts @response["features"]
 
-  def self.inDistrict? lat, long
-
-    # figure out if it is in a specific area in
-    # @spec_area = CouncilDistrict.where(
-    #   "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
-    #   long, lat)
-
-    @url = 'https://services2.arcgis.com/'
-
-    @connection = Faraday.new(url: @url ) do |conn|
-      conn.headers['Accept'] = 'text/json'
-      conn.request :instrumentation
-      conn.response :json
-      conn.adapter Faraday.default_adapter
-      conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
+    if @response["features"].empty?
+      @district_data = nil
+    else
+      @district_number = @response["features"][0]["attributes"]["DISTRICTS"][-1,1]
+      @district_data = CouncilDistrict.find(@district_number)
     end
-
-    @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
-    @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
-                                @userpoint +
-                                '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
-    # example response
-    # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "geometryType"=>"esriGeometryPolygon", "spatialReference"=>{"wkid"=>2868, "latestWkid"=>2868}, "fields"=>[], "features"=>[{"attributes"=>{"DISTRICTS"=>"DISTRICT 1"}}]}
-    # example nil response
-    # {"objectIdFieldName"=>"OBJECTID", "globalIdFieldName"=>"", "features"=>[]}
-
-    @spec_area = @response.body["features"]
-    return !@spec_area.empty?
-  end
-
-  def self.getDistrict lat, long
-    # figure out if it is in a specific area in historical district
-
-    @url = 'https://services2.arcgis.com/'
-
-    @connection = Faraday.new(url: @url ) do |conn|
-      conn.headers['Accept'] = 'text/json'
-      conn.request :instrumentation
-      conn.response :json
-      conn.adapter Faraday.default_adapter
-      conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
-    end
-
-    @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
-    @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaAzCouncilDistricts/FeatureServer/2/query?geometry=' +
-                                @userpoint +
-                                '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
-
-    @district_number = @response.body["features"][0]["attributes"]["DISTRICTS"][-1,1]
-
-    @area_in_geojson = CouncilDistrict.find(@district_number)
-
-    return @area_in_geojson
+    return @district_data
   end
 
   # def self.getDistricts

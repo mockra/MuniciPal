@@ -40,7 +40,7 @@ class AddressesController < ApplicationController
       end
 
       # find address at given lat/lon
-      @address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{@lat}, #{@lng}"
+      # @address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{@lat}, #{@lng}"
     end
 
 #moving this action closer to its route logic above - in the if
@@ -62,19 +62,25 @@ class AddressesController < ApplicationController
 # /districts/byAddress/:address -> lat,lon
 
     if not params[:address].blank?
-      @address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
-      @in_district = CouncilDistrict.inDistrict? @address.lat, @address.lng
-      @lat = @address.lat
-      @lng = @address.lng
+      @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
+      @district = CouncilDistrict.getDistrict? @geocoded_address.lat, @geocoded_address.lng
+      @in_district = !@district.nil?
+      @lat = @geocoded_address.lat
+      @lng = @geocoded_address.lng
       puts "LAT/LON from address: " + @lat.to_s + "/" + @lng.to_s
     end
 
     # lat/lon given, reverse geocode to find address
     if not params[:lat].blank? and not params[:long].blank?
-      @address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:long]}"
-      @in_district = CouncilDistrict.inDistrict? params[:lat], params[:long]
+      #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:long]}"
+      @district = CouncilDistrict.inDistrict? params[:lat], params[:long]
+      @in_district = !@district.nil?
       @lat = params[:lat]
       @lng = params[:long]
+      @district_id = @district.id
+      @event_items = EventItem.current.with_matters.in_district(@district_polygon.id).order('date DESC') +
+                     EventItem.current.with_matters.no_district.order('date DESC')
+
       puts "LAT/LON from params: " + @lat.to_s + "/" + @lon.to_s
     end
 
