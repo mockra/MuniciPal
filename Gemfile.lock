@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/ajturner/geoservices-ruby.git
+  revision: c738ffc31cbc9460159a1c4fb66c3e5ca9de6916
+  specs:
+    geoservices (0.0.6)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -199,6 +205,7 @@ DEPENDENCIES
   faraday_middleware
   fittextjs_rails
   geokit (= 1.8.4)
+  geoservices!
   jbuilder (= 1.5.3)
   jquery-rails (= 3.1.0)
   pg (= 0.17.1)
