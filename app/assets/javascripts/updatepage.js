@@ -110,7 +110,8 @@ function update_with_new( data ) {
 
   }
 
-  $( "#address").val(data.address);
+  var showaddress = ((data.address) ? data.address : "");
+  $("#address").val(showaddress);
   map.setView([data.lat, data.lng], config.map.start_zoom);
   document.getElementById('results').scrollIntoView();
 }
