@@ -8,6 +8,8 @@ class AddressesController < ApplicationController
     @in_district = false
     @lat = nil, @lng = nil, @address = nil
 
+
+# /people/byTitle/:title (title = mayor, manager, councilmember, all)
     if params[:mayor]
       @person_title = "mayor"
     elsif params[:manager]
@@ -17,6 +19,7 @@ class AddressesController < ApplicationController
     end
 
     # district given
+#/districts/byId/:id/ -> { person + things}, where things = event_items (including attachments), and events
     if not params[:district].blank?
 
       @in_district = true
@@ -40,7 +43,24 @@ class AddressesController < ApplicationController
       @address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{@lat}, #{@lng}"
     end
 
+#moving this action closer to its route logic above - in the if
+    if @person_title == "mayor" or @person_title == "manager"
+      @event_items = EventItem.current.with_matters.order('date DESC') #all
+      @district_id = nil
+      if !@lat or !@lng
+        @lat = 33.42
+        @lng = -111.835
+        @in_district = true;
+        @district_polygon = CouncilDistrict.getDistrict @lat, @lng
+        if @district_polygon and @district_polygon.id
+          @district_id = @district_polygon.id
+        end
+      end
+    end
+
     # address given; geocode to get lat/lon
+# /districts/byAddress/:address -> lat,lon
+
     if not params[:address].blank?
       @address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
       @in_district = CouncilDistrict.inDistrict? @address.lat, @address.lng
@@ -58,6 +78,7 @@ class AddressesController < ApplicationController
       puts "LAT/LON from params: " + @lat.to_s + "/" + @lon.to_s
     end
 
+#/districts/byPoint/lat,lon
     if @address
       @addr = @address.full_address
       @district_polygon = CouncilDistrict.getDistrict @lat, @lng
@@ -70,20 +91,8 @@ class AddressesController < ApplicationController
       end
     end
 
-    if @person_title == "mayor" or @person_title == "manager"
-      @event_items = EventItem.current.with_matters.order('date DESC') #all
-      @district_id = nil
-      if !@lat or !@lng
-        @lat = 33.42
-        @lng = -111.835
-        @in_district = true;
-        @district_polygon = CouncilDistrict.getDistrict @lat, @lng
-        if @district_polygon and @district_polygon.id
-          @district_id = @district_polygon.id
-        end
-      end
-    end
-
+# /event_items/current -> includes attachments
+# /events/current
     if @event_items
       attachments = @event_items.map(&:attachments) #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
       events = @event_items.map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
