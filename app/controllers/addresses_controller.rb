@@ -114,6 +114,7 @@ class AddressesController < ApplicationController
     end
 
     # only build a response if user asks for something specific
+    # the following line checks that the submitted parameters match at least one of the variables listed in the array
     if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
       @response = { :lat                    => @lat,
                     :lng                    => @lng,
