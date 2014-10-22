@@ -56,7 +56,7 @@ class AddressesController < ApplicationController
 
       @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-      @district_id = @district.id
+      @district_id = @district.id unless @in_district == FALSE
     end
 
     # lat/lon given, reverse geocode to find address
@@ -70,7 +70,7 @@ class AddressesController < ApplicationController
 
       @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-      @district_id = @district.id
+      @district_id = @district.id unless @in_district == FALSE
     end
 
 #/districts/byPoint/lat,lon
