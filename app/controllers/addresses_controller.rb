@@ -6,8 +6,23 @@ class AddressesController < ApplicationController
 
   def index
     @in_district = false
-    @lat = nil, @lng = nil, @address = nil
+    @lat = nil
+    @lng = nil
+    @address = nil
+    @addr = ""
 
+    #fill this out and set it along the way
+    # if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
+    #   @response = { :lat                    => @lat,
+    #                 :lng                    => @lng,
+    #                 :address                => @addr,
+    #                 :in_district       => @in_district,
+    #                 :person_title      => @person_title,
+    #                 :district_id       => @district_id,
+    #                 :event_items       => @event_items,
+    #                 :attachments => attachments,
+    #                 :events => events
+    #               }
 
 # /people/byTitle/:title (title = mayor, manager, councilmember, all)
     if params[:mayor]
