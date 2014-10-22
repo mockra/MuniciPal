@@ -6,23 +6,24 @@ class AddressesController < ApplicationController
 
   def index
     @in_district = false
+    @location = nil
     @lat = nil
     @lng = nil
     @address = nil
     @addr = ""
 
     #fill this out and set it along the way
-    # if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
-    #   @response = { :lat                    => @lat,
-    #                 :lng                    => @lng,
-    #                 :address                => @addr,
-    #                 :in_district       => @in_district,
-    #                 :person_title      => @person_title,
-    #                 :district_id       => @district_id,
-    #                 :event_items       => @event_items,
-    #                 :attachments => attachments,
-    #                 :events => events
-    #               }
+    #if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
+    # @response = { :lat                    => @lat,
+    #               :lng                    => @lng,
+    #               :address                => @addr,
+    #               :in_district       => @in_district,
+    #               :person_title      => @person_title,
+    #               :district_id       => @district_id,
+    #               :event_items       => @event_items,
+    #               :attachments => attachments,
+    #               :events => events
+    #             }
 
 # /people/byTitle/:title (title = mayor, manager, councilmember, all)
     if params[:mayor]
@@ -47,6 +48,7 @@ class AddressesController < ApplicationController
         # use lat/lon at center of Mesa
         @lat = 33.42
         @lng = -111.835
+        @location = { lat: @lat, lng: @lng }
       else
         # NEED TO REPLACE THIS
         # find lat/lon at center of polygon
@@ -62,22 +64,36 @@ class AddressesController < ApplicationController
     # address given; geocode to get lat/lon
 # /districts/byAddress/:address -> lat,lon
 
+
     if not params[:address].blank?
-     @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
-     @lat = @geocoded_address.lat
-     @lng = @geocoded_address.lng
+    #if address is given:
+      @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
+      @lat = @geocoded_address.lat
+      @lng = @geocoded_address.lng
+      @location = { lat: @lat, lng: @lng }
     elsif (not params[:lat].blank? and not params[:long].blank?)
+    #if lat and long are given or geocoded from address
       @lat = params[:lat]
       @lng = params[:long]
+      @location = { lat: @lat, lng: @lng }
     end
 
-    if @lat
-      @district = CouncilDistrict.getDistrict @lat, @lng
+    if @location
+      @district = CouncilDistrict.getDistrict @location[:lat], @location[:lng] #@lat, @lng
       @in_district = !@district.nil?
+      @district_id = @district.id if @in_district
+    end
 
+    if not params[:district].blank?
+      @district_id = params[:district]
+      @district = CouncilDistrict.find(@district_id)
+      @in_district = true
+    end
+
+
+    if @district
       @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-      @district_id = @district.id if @in_district
     end
 
 
@@ -146,11 +162,13 @@ class AddressesController < ApplicationController
         end
     end
 
+
+
     # only build a response if user asks for something specific
     # the following line checks that the submitted parameters match at least one of the variables listed in the array
     if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
-      @response = { :lat                    => @lat,
-                    :lng                    => @lng,
+      @response = { :lat                    => @location[:lat], #@lat,
+                    :lng                    => @location[:lng], #@lng,
                     :address                => @addr,
                     :in_district       => @in_district,
                     :person_title      => @person_title,
