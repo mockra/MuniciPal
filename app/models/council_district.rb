@@ -71,15 +71,15 @@ class CouncilDistrict < ActiveRecord::Base
   #   return @districts_as_geojson;
   # end
 
-  def self.point_in_district district
-    @point = ActiveRecord::Base.connection.select_one(
-      "WITH results as (
-        SELECT ST_PointOnSurface(geom) as point from council_districts where id = #{district}
-      ) SELECT ST_X(point) as lng, ST_Y(point) as lat from results"
-    )
-    @point = @point.merge(@point) { |k,v| v.to_f } #string to float on all hash values
-    return @point
-  end
+  # def self.point_in_district district
+  #   @point = ActiveRecord::Base.connection.select_one(
+  #     "WITH results as (
+  #       SELECT ST_PointOnSurface(geom) as point from council_districts where id = #{district}
+  #     ) SELECT ST_X(point) as lng, ST_Y(point) as lat from results"
+  #   )
+  #   @point = @point.merge(@point) { |k,v| v.to_f } #string to float on all hash values
+  #   return @point
+  # end
 
 
 end
