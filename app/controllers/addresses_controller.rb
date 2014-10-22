@@ -63,31 +63,51 @@ class AddressesController < ApplicationController
 # /districts/byAddress/:address -> lat,lon
 
     if not params[:address].blank?
-      @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
-      @lat = @geocoded_address.lat
-      @lng = @geocoded_address.lng
-
-      @district = CouncilDistrict.getDistrict @lat, @lng
-      @in_district = !@district.nil?
-
-      @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
-                     EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-      @district_id = @district.id unless @in_district == FALSE
-    end
-
-    # lat/lon given, reverse geocode to find address
-    if not params[:lat].blank? and not params[:long].blank?
+     @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
+     @lat = @geocoded_address.lat
+     @lng = @geocoded_address.lng
+    elsif (not params[:lat].blank? and not params[:long].blank?)
       @lat = params[:lat]
       @lng = params[:long]
+    end
 
-      #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:long]}"
+    if @lat
       @district = CouncilDistrict.getDistrict @lat, @lng
       @in_district = !@district.nil?
 
       @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-      @district_id = @district.id unless @in_district == FALSE
+      @district_id = @district.id if @in_district
     end
+
+
+
+    # if not params[:address].blank?
+    #   @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
+    #   @lat = @geocoded_address.lat
+    #   @lng = @geocoded_address.lng
+    #
+    #   @district = CouncilDistrict.getDistrict @lat, @lng
+    #   @in_district = !@district.nil?
+    #
+    #   @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
+    #                  EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
+    #   @district_id = @district.id unless @in_district == FALSE
+    # end
+    #
+    # # lat/lon given, reverse geocode to find address
+    # if not params[:lat].blank? and not params[:long].blank?
+    #   @lat = params[:lat]
+    #   @lng = params[:long]
+    #
+    #   #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:long]}"
+    #   @district = CouncilDistrict.getDistrict @lat, @lng
+    #   @in_district = !@district.nil?
+    #
+    #   @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
+    #                  EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
+    #   @district_id = @district.id unless @in_district == FALSE
+    # end
 
 #/districts/byPoint/lat,lon
     # if @address
