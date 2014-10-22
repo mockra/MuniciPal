@@ -48,10 +48,11 @@ class AddressesController < ApplicationController
         @lat = 33.42
         @lng = -111.835
       else
+        # NEED TO REPLACE THIS
         # find lat/lon at center of polygon
-        any_point = CouncilDistrict.point_in_district params[:district]
-        @lat = any_point["lat"]
-        @lng = any_point["lng"]
+        # any_point = CouncilDistrict.point_in_district params[:district]
+        # @lat = any_point["lat"]
+        # @lng = any_point["lng"]
       end
 
       # find address at given lat/lon
@@ -108,11 +109,7 @@ class AddressesController < ApplicationController
       events = @event_items.map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
     end
 
-    if @geocoded_address
-      @addr = @geocoded_address.full_address
-    else
-      @addr = ""
-    end
+    @addr = @geocoded_address.full_address if @geocoded_address
 
     if @person_title == "mayor" or @person_title == "manager"
       @event_items = EventItem.current.with_matters.order('date DESC') #all
@@ -120,6 +117,7 @@ class AddressesController < ApplicationController
         if !@lat or !@lng
           @lat = 33.42
           @lng = -111.835
+          #the following line is a legacy thing from a variable in JS that flags whether a user was in the city
           @in_district = true;
           # @district_polygon = CouncilDistrict.getDistrict @lat, @lng
           # if @district_polygon and @district_polygon.id
