@@ -80,6 +80,22 @@ function updatePage(params) {
   });
 }
 
+
+// function getDistrictGeom(district_id) {
+//   $.ajax({
+//     type: 'GET',
+//     url: 'https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaCouncilDistricts/FeatureServer/0/query?where=DISTRICT%3D'+district_id+'&f=json',
+//     dataType: 'json',
+//     success: function(geom) {
+//       var geoJSON = $.parseJSON(geom);
+//       geoJSON.properties = { fill: config.map.district_fill };
+//       districtLayer.setGeoJSON(geoJSON);
+//       districtLayer.setFilter(function() { return true; });
+//     }
+//   });
+// }
+
+
 function update_with_new( data ) {
 
   if (!data.event_items) { return; } // must be at root w/ no data yet
@@ -92,11 +108,7 @@ function update_with_new( data ) {
       history.pushState({}, "?lat=" + data.lat + "&long=" + data.lng);
       marker.setLatLng(new L.LatLng(data.lat, data.lng));
       var district = _.find(districts, { id: data.district_id });
-/*      var geoJSON = $.parseJSON(district.geom);
-      geoJSON.properties = { fill: config.map.district_fill };
-      districtLayer.setGeoJSON(geoJSON);
-      districtLayer.setFilter(function() { return true; });
-*/
+      // getDistrictGeom(data.district_id);
     }
 
     updatePageContent(data);
