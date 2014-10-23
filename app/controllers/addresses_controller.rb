@@ -5,7 +5,7 @@ class AddressesController < ApplicationController
   respond_to :html, :json
 
   def index
-#   fill this out and set it along the way
+#   fill this out and set it alng the way
     @response = { :lat                    => nil,
                   :lng                    => nil,
                   :address                => "",

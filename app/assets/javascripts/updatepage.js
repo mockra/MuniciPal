@@ -8,7 +8,7 @@ IT UPDATES THE MAP AND THE COUNCIL ITEMS
 This function is called from the main landing page through a JQuery function in addresses.js
 It makes a get request to the Addresses controller with:
   -the user-entered Address, or
-  -a Latitude and Longitude pair
+  -a Latitude and longitude pair
    (from the map and map.js onDragEnd function)
 
 The Addresses Controller returns the "data" object, an example of which can be found below:
