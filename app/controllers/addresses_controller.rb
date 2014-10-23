@@ -66,19 +66,18 @@ class AddressesController < ApplicationController
     #if address is given:
       @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode @response[:address]
       @response[:lat] = @geocoded_address.lat
-      @lng = @geocoded_address.lng
+      @response[:lng]  = @geocoded_address.lng
       @location = { lat: @response[:lat], lng: @response[:lng] }
     elsif (not @response[:lat].blank? and not @response[:lng].blank?)
     #if lat and lng are given or geocoded from address
-      @response[:lat] = @response[:lat]
-      @response[:lng] = @response[:lng]
       @location = { lat: @response[:lat], lng: @response[:lng] }
     end
 
     if @location
-      @district_json = CouncilDistrict.getDistrict @location[:lat], @location[:lng] #@lat, @lng
-      @response[:in_district] = !@district_json[:district].nil?
-      @response[:district] = @district_json.id if @response[:in_district]
+      @district_data = CouncilDistrict.getDistrict @location[:lat], @location[:lng] #@lat, @lng
+      @response[:in_district] = !@district_data.nil?
+
+      @response[:district] = @district_data.id if @response[:in_district]
     end
 
     if not @response[:district].blank?
