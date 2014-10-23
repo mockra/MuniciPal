@@ -1,15 +1,15 @@
 class CouncilDistrict < ActiveRecord::Base
   has_many :event_items
 
-  COORD_SYS_REF = 4326;   # The coordinate system that will be used as the reference and is now Latitude and Longitude Coord System
+  COORD_SYS_REF = 4326;   # The coordinate system that will be used as the reference and is now Latitude and lngitude Coord System
 
   # THE COMMENTED EXAMPLE BELOW USES FARADAY INSTEAD OF THE ARCGIS GEM--SEEMS PREFERABLE TO GO WITH A SUPPORTED GEM FOR THE API
-  # def self.getDistrict lat, long
+  # def self.getDistrict lat, lng
   #
   #   # figure out if it is in a specific area in
   #   # @spec_area = CouncilDistrict.where(
   #   #   "ST_Contains(geom, ST_SetSRID(ST_MakePoint(?, ?),#{COORD_SYS_REF}))",
-  #   #   long, lat)
+  #   #   lng, lat)
   #
   #   @url = 'https://services2.arcgis.com/'
   #
@@ -21,7 +21,7 @@ class CouncilDistrict < ActiveRecord::Base
   #     conn.request :retry, max: 5, interval: 0.05, interval: 0.05, interval_randomness: 0.5, backoff_factor: 2
   #   end
   #
-  #   @userpoint = CGI::escape(long.to_s + ','+ lat.to_s)
+  #   @userpoint = CGI::escape(lng.to_s + ','+ lat.to_s)
   #   @response = @connection.get '1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaCouncilDistricts/FeatureServer/0/query?geometry=' +
   #                               @userpoint +
   #                               '&geometryType=esriGeometryPoint&inSR=4326&spatialRel=esriSpatialRelIntersects&units=esriSRUnit_Meter&outFields=&returnGeometry=false&f=json'
@@ -40,11 +40,11 @@ class CouncilDistrict < ActiveRecord::Base
   #   return @district_data
   # end
 
-  def self.getDistrict lat, long
+  def self.getDistrict lat, lng
     service_url = "https://services2.arcgis.com/1gVyYKfYgW5Nxb1V/ArcGIS/rest/services/MesaCouncilDistricts/FeatureServer"
     service = Geoservice::MapService.new(url: service_url)
     params = {
-      geometry: [long,lat].join(','),
+      geometry: [lng,lat].join(','),
       geometryType: "esriGeometryPoint",
       inSR: 4326,
       spatialRel: "esriSpatialRelIntersects",

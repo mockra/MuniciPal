@@ -69,7 +69,7 @@ Example of item from event_items Array:
 
 
 // Request new data from the server and update the page based on the result.
-// params should be a hash with keys like `address` or `lat` & `long`.
+// params should be a hash with keys like `address` or `lat` & `lng`.
 function updatePage(params) {
   $.ajax({
     type: 'GET',
@@ -105,7 +105,7 @@ function update_with_new( data ) {
   if (data.in_district) {
 
     if (data.person_title == "councilmember") {
-      history.pushState({}, "?lat=" + data.lat + "&long=" + data.lng);
+      history.pushState({}, "?lat=" + data.lat + "&lng=" + data.lng);
       marker.setLatLng(new L.LatLng(data.lat, data.lng));
       var district = _.find(districts, { id: data.district_id });
       // getDistrictGeom(data.district_id);

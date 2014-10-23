@@ -67,10 +67,10 @@ class AddressesController < ApplicationController
       @response[:lat] = @geocoded_address.lat
       @lng = @geocoded_address.lng
       @location = { lat: @response[:lat], lng: @response[:lng] }
-    elsif (not @response[:lat].blank? and not @response[:long].blank?)
-    #if lat and long are given or geocoded from address
+    elsif (not @response[:lat].blank? and not @response[:lng].blank?)
+    #if lat and lng are given or geocoded from address
       @response[:lat] = @response[:lat]
-      @response[:lng] = @response[:long]
+      @response[:lng] = @response[:lng]
       @location = { lat: @response[:lat], lng: @response[:lng] }
     end
 
@@ -108,11 +108,11 @@ class AddressesController < ApplicationController
     # end
     #
     # # lat/lon given, reverse geocode to find address
-    # if not params[:lat].blank? and not params[:long].blank?
+    # if not params[:lat].blank? and not params[:lng].blank?
     #   @lat = params[:lat]
-    #   @lng = params[:long]
+    #   @lng = params[:lng]
     #
-    #   #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:long]}"
+    #   #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:lng]}"
     #   @district = CouncilDistrict.getDistrict @lat, @lng
     #   @in_district = !@district.nil?
     #

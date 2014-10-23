@@ -13,7 +13,7 @@ class CouncilDistrictsController < ApplicationController
   end
 
   def bypoint
-    @council_district = CouncilDistrict.bypoint(params[:lat],params[:long])
+    @council_district = CouncilDistrict.bypoint(params[:lat],params[:lng])
     print @council_district.inspect
   end
 
