@@ -87,64 +87,20 @@ class AddressesController < ApplicationController
     end
 
 
-    if @district
-      @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
+    if @response[:district]
+      @response[:event_items] = EventItem.current.with_matters.in_district(@response[:district]).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') if @response[:in_district]
     end
 
-
-
-    # if not params[:address].blank?
-    #   @geocoded_address = Geokit::Geocoders::MultiGeocoder.geocode params[:address]
-    #   @lat = @geocoded_address.lat
-    #   @lng = @geocoded_address.lng
-    #
-    #   @district = CouncilDistrict.getDistrict @lat, @lng
-    #   @in_district = !@district.nil?
-    #
-    #   @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
-    #                  EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-    #   @district_id = @district.id unless @in_district == FALSE
-    # end
-    #
-    # # lat/lon given, reverse geocode to find address
-    # if not params[:lat].blank? and not params[:lng].blank?
-    #   @lat = params[:lat]
-    #   @lng = params[:lng]
-    #
-    #   #@address = Geokit::Geocoders::MultiGeocoder.reverse_geocode "#{params[:lat]}, #{params[:lng]}"
-    #   @district = CouncilDistrict.getDistrict @lat, @lng
-    #   @in_district = !@district.nil?
-    #
-    #   @event_items = EventItem.current.with_matters.in_district(@district.id).order('date DESC') +
-    #                  EventItem.current.with_matters.no_district.order('date DESC') unless @in_district == FALSE
-    #   @district_id = @district.id unless @in_district == FALSE
-    # end
-
-#/districts/byPoint/lat,lon
-    # if @address
-    #   @addr = @address.full_address
-    #   @district_polygon = CouncilDistrict.getDistrict @lat, @lng
-    #   if @district_polygon and @district_polygon.id
-    #     @district_id = @district_polygon.id
-    #     @event_items = EventItem.current.with_matters.in_district(@district_polygon.id).order('date DESC') +
-    #                    EventItem.current.with_matters.no_district.order('date DESC')
-    #   else
-    #     puts "ERROR: Whaaaaaat?! No district/id. You ran rake council_districts:load to populate the table right?"
-    #   end
-    # end
-
-# /event_items/current -> includes attachments
-# /events/current
-    if @event_items
-      attachments = @event_items.map(&:attachments) #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
-      events = @event_items.map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
+    if @response[:event_items]
+      @response[:attachments] = @response[:event_items].map(&:attachments) #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
+      @response[:events] = @response[:event_items].map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
     end
 
 #    @addr = @geocoded_address.full_address if @geocoded_address
 
     if @response[:person_title] == "mayor" or @response[:person_title] == "manager"
-      @event_items = EventItem.current.with_matters.order('date DESC') #all
+      @response[:event_items] = EventItem.current.with_matters.order('date DESC') #all
       @response[:district] = nil
         if !@response[:lat] or !@response[:lng]
           @response[:lat] = 33.42
@@ -157,25 +113,6 @@ class AddressesController < ApplicationController
           # end
         end
     end
-
-    #
-    # # only build a response if user asks for something specific
-    # # the following line checks that the submitted parameters match at least one of the variables listed in the array
-    # if (['district', 'mayor', 'address', 'manager', 'lat', 'lon'] & params.keys).length > 0
-    #   @response = { :lat                    => @location[:lat], #@lat,
-    #                 :lng                    => @location[:lng], #@lng,
-    #                 :address                => @addr,
-    #                 :in_district       => @in_district,
-    #                 :person_title      => @person_title,
-    #                 :district       => @district_id,
-    #                 :event_items       => @event_items,
-    #                 :attachments => attachments,
-    #                 :events => events
-    #               }
-    # else
-    #   @response = {}
-    # end
-
     respond_with(@response)
   end
 end
