@@ -17,7 +17,10 @@ class AddressesController < ApplicationController
                   :events => nil
                 }
 
-    #move below to own route? - seem like key should be :title, not :title_value?
+    #SET THE VALUES IN THE RESPONSE TO THEIR VALUES IN THE PARAMS
+    @response.each_key{|key| @response[key.to_sym] = params[key.to_sym]}
+
+    #move block below to own route? - seem like params' key should be :title, not :title.value?
     # /people/byTitle/:title (title = mayor, manager, councilmember, all)
     if params[:mayor]
       @response[:person_title] = "mayor"
@@ -27,8 +30,6 @@ class AddressesController < ApplicationController
       @response[:person_title] = "councilmember"
     end
 
-    #SET THE VALUES IN THE RESPONSE TO THEIR VALUES IN THE PARAMS
-    @response.each_key{|key| @response[key.to_sym] = params[key.to_sym]}
 
     # district given
 #/districts/byId/:id/ -> { person + things}, where things = event_items (including attachments), and events
