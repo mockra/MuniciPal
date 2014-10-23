@@ -107,8 +107,8 @@ function update_with_new( data ) {
     if (data.person_title == "councilmember") {
       history.pushState({}, "?lat=" + data.lat + "&lng=" + data.lng);
       marker.setLatLng(new L.LatLng(data.lat, data.lng));
-      var district = _.find(districts, { id: data.district_id });
-      // getDistrictGeom(data.district_id);
+      var district = _.find(districts, { id: data.district });
+      // getDistrictGeom(data.district);
     }
 
     updatePageContent(data);
@@ -176,7 +176,7 @@ requests to the legistar REST API.
 function updatePageContent(data) {
 
   $('body').removeClass('initial');
-  var district = data.district_id;
+  var district = data.district;
   var member = find_person(data.person_title, district);
 
   var person = new Person(member).render('#person');
