@@ -38,10 +38,6 @@ class AddressesController < ApplicationController
       @response[:in_district] = true
 
       if @response[:district] == "all"
-        # puts "mayor or manager!"
-        # @mayor = true
-        # @district_id = 0 # 0 means mayor
-        #marker_location = [33.42, -111.835]
         # use lat/lon at center of Mesa
         @response[:lat] = 33.42
         @response[:lng] = -111.835
