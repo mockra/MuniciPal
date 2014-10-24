@@ -5,7 +5,9 @@ class AddressesController < ApplicationController
   respond_to :html, :json
 
   def index
-#   fill this out and set it alng the way
+  #index taxes a lat/lng pair, an address, a district, or a person, 
+  #and returns details about representatives, events, items, and attachments
+  #as well as the original data
     @response = { :lat                    => nil,
                   :lng                    => nil,
                   :address                => "",
@@ -29,7 +31,6 @@ class AddressesController < ApplicationController
     else
       @response[:person_title] = "councilmember"
     end
-
 
     # district given
 #/districts/byId/:id/ -> { person + things}, where things = event_items (including attachments), and events
@@ -80,14 +81,14 @@ class AddressesController < ApplicationController
       @response[:district] = @district_data.id if @response[:in_district]
     end
 
-    if not @response[:district].blank?
-      #NOT SURE WE NEED THIS LINE BELOW - THE JSON ISN'T USED FOR ANYTHING
-      @district_json = CouncilDistrict.find(@response[:district])
-      @response[:in_district] = true
-    end
-
+    # if not @response[:district].blank?
+    #   #NOT SURE WE NEED THIS LINE BELOW - THE JSON ISN'T USED FOR ANYTHING
+    #   @district_json = CouncilDistrict.find(@response[:district])
+    #   @response[:in_district] = true
+    # end
 
     if @response[:district]
+      @response[:in_district] = true
       @response[:event_items] = EventItem.current.with_matters.in_district(@response[:district]).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') if @response[:in_district]
     end
