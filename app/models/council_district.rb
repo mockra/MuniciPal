@@ -18,12 +18,11 @@ class CouncilDistrict < ActiveRecord::Base
     puts @response["features"]
 
     if @response["features"].empty?
-      @district_data = nil
+      @district_number = nil
     else
-      @district_number = @response["features"][0]["attributes"]["DISTRICTS"][-1,1]
-      @district_data = CouncilDistrict.find(@district_number)
+      @district_number = @response["features"][0]["attributes"]["DISTRICT"]
     end
-    return @district_data
+    return @district_number
   end
 
 end

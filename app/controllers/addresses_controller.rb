@@ -75,10 +75,10 @@ class AddressesController < ApplicationController
     end
 
     if @location
-      @district_data = CouncilDistrict.getDistrict @location[:lat], @location[:lng] #@lat, @lng
+      @district_number = CouncilDistrict.getDistrict @location[:lat], @location[:lng] #@lat, @lng
       @response[:in_district] = !@district_data.nil?
 
-      @response[:district] = @district_data.id if @response[:in_district]
+      @response[:district] = @district_number
     end
 
     # if not @response[:district].blank?
@@ -91,11 +91,6 @@ class AddressesController < ApplicationController
       @response[:in_district] = true
       @response[:event_items] = EventItem.current.with_matters.in_district(@response[:district]).order('date DESC') +
                      EventItem.current.with_matters.no_district.order('date DESC') if @response[:in_district]
-    end
-
-    if @response[:event_items]
-      @response[:attachments] = @response[:event_items].map(&:attachments) #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
-      @response[:events] = @response[:event_items].map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
     end
 
 #    @addr = @geocoded_address.full_address if @geocoded_address
@@ -114,6 +109,12 @@ class AddressesController < ApplicationController
           # end
         end
     end
+
+    if @response[:event_items]
+      @response[:attachments] = @response[:event_items].map(&:attachments) #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
+      @response[:events] = @response[:event_items].map(&:event).uniq #see http://ablogaboutcode.com/2012/01/04/the-ampersand-operator-in-ruby/
+    end
+
     respond_with(@response)
   end
 end

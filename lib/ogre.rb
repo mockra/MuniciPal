@@ -1,7 +1,7 @@
 require 'faraday'
 
 module Ogre
-	def convert(file,source_srs,target_srs)
+	def self.convert(file,source_srs,target_srs)
 	    @url = 'http://ogre.adc4gis.com/'
 
 	    @connection = Faraday.new(url: @url ) do |conn|
