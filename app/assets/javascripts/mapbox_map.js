@@ -122,24 +122,24 @@ function jumpToFeature(e) {
 
 function addDistrictsToMap(districts) {
 
-  g_districts = otherDistrictsJSON = {
-    type: "FeatureCollection",
-    features: _.map(districts, function(district) {
-      return {
-        type: "Feature",
-        geometry: jQuery.parseJSON(district.geom),
-        properties: {
-          name: district.name,
-          twit_name: district.twit_name,
-          twit_wdgt: district.twit_wdgt,
-        },
-        id: district.id,
-      }
-    }),
-  };
+  // g_districts = otherDistrictsJSON = {
+  //   type: "FeatureCollection",
+  //   features: _.map(districts, function(district) {
+  //     return {
+  //       type: "Feature",
+  //       geometry: jQuery.parseJSON(district.geom),
+  //       properties: {
+  //         name: district.name,
+  //         twit_name: district.twit_name,
+  //         twit_wdgt: district.twit_wdgt,
+  //       },
+  //       id: district.id,
+  //     }
+  //   }),
+  // };
 
 
-  otherDistrictsLayer = L.geoJson(otherDistrictsJSON, {
+  otherDistrictsLayer = L.geoJson(districts, {
     style: function (feature) {
       return {
           fillColor: config.map.district_fill,

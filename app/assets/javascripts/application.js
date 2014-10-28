@@ -18,6 +18,8 @@
 //= require analytics
 //= require vendor/underscore.js
 //= require vendor/mustache.js
+//= require vendor/terraformer.js
+//= require vendor/terraformer-arcgis-parser.js
 //= require 'config.js'
 //= require updatepage.js
 //= require legistar/legistar.js
@@ -26,3 +28,4 @@
 //= require dropdown-menu.js
 //= require person.js
 //= require mapbox_map.js
+//= require esri_requests.js

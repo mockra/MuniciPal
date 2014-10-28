@@ -56,7 +56,8 @@
 <script>
 
 $(document).ready(function() {
-  districts = <%= raw @districts.to_json %>
+  districts = getDistrictsGeom();
+
   addDistrictsToMap(districts);
 
   response = <%= raw @response.to_json %>
